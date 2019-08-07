@@ -133,6 +133,7 @@ public:
 		}
 
 	}
+
 	void SetPosition(sf::Vector2f newPos) {
 		sprite.setPosition(newPos);
 	}
@@ -145,6 +146,9 @@ public:
 	float getY() {
 		return sprite.getPosition().y;
 	}
+	float getX() {
+		return sprite.getPosition().x;
+	}
 private:
 	static constexpr float speed = 125.0f;
 	sf::Vector2f pos;
@@ -155,15 +159,58 @@ private:
 	AnimationIndex state = AnimationIndex::breakRight;
 };
 
+class Obstacles
+{
+public:
+	Obstacles(const sf::Vector2f& pos)
+		:
+		pos(pos)
+	{
+		texture.loadFromFile("shuriken.png");
+		shuriken.setTexture(texture);
+
+		//Scale sprite
+		shuriken.setOrigin(sf::Vector2f(12, 12));
+		shuriken.setScale(sf::Vector2f(1.f, 1.f)); // absolute scale factor
+		shuriken.scale(sf::Vector2f(2.f, 2.f)); // factor relative to the current scale
+		//shuriken.rotate(10.f);
+	}
+	void Draw(sf::RenderTarget& rt) const
+	{
+		rt.draw(shuriken);
+	}
+	void SetPosition(sf::Vector2f newPos) {
+		shuriken.setPosition(newPos);
+	}
+	void Update(float dt) {
+		//pos += vel * dt;
+		shuriken.rotate(-1.f);
+		shuriken.setPosition(pos);
+	}
+private:
+	//sf::Vector2f vel = { 40.0f,40.0f };
+	sf::Vector2f pos;
+	sf::Texture texture;
+	sf::Sprite shuriken;
+};
+
+class Status		//TO DO: move function from main to this class
+{
+public:
+	float window_width = 1024, window_height = 768;
+
+};
+
 int main()
 {
 	// Create the main window
-	sf::RenderWindow window(sf::VideoMode(1600, 800), "VitaTheDino");
+	Status status;
+	sf::RenderWindow window(sf::VideoMode(status.window_width, status.window_height), "VitaTheDino");
 	sf::Texture bg;
 	bg.loadFromFile("background.png");
 	sf::Sprite sBackground(bg);
 	Dino vita({ 100.0f, 100.0f });
-	
+	Obstacles object({ 400.0f ,400.0f });
 	//Gravity Variables
 	//const int groundHeight = 600.0f;
 	//const float gravity = 30.0f;
@@ -207,49 +254,54 @@ int main()
 
 		//Handle input
 		sf::Vector2f dir = { 0.0f,0.0f };
+		
 		//if (sf::Event::KeyReleased) isJumping = false;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 		{
-			dir.y -= 2.0f;
+			if (vita.getY() + 16 <= 0) dir.y = 0.0f;
+			else dir.y -= 2.0f;
 			//isJumping = true;
 		//} else if (vita.getY() < groundHeight && isJumping == false) {
 		//	dir.y += 5.0f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 		{
-			dir.y += 2.0f;
+			if (vita.getY() + 88>= status.window_height) dir.y = 0.0f;
+			else dir.y += 2.0f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
-			dir.x -= 2.0f;
+			if (vita.getX() + 20 <= 0) dir.x = 0.0f;
+			else dir.x -= 2.0f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 		{
-			dir.x += 2.0f;
+			if (vita.getX() + 80 >= status.window_width) dir.x = 0.0f; 
+			else dir.x += 2.0f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		{
-			dir.x += 5.0f;
+		{	
+			if (vita.getX() + 80 >= status.window_width) dir.x = 0.0f;
+			else dir.x += 5.0f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
-			dir.x -= 5.0f;
+			if (vita.getX() + 20 <= 0) dir.x = 0.0f;
+			else dir.x -= 5.0f;
 		}
+
 		vita.SetDirection(dir);
-		//update
-		vita.Update(dt);
-		//Gravity Logic
-		//if (vita.getY() < groundHeight && isJumping == false) {
-		//	dir.y += gravity;
-		//}
 		
+		//update
+		object.Update(dt);
+		vita.Update(dt);
 		// Clear screen
 		window.clear();
 		window.draw(sBackground);		//Draw background
 		window.draw(text);				//Draw text
 		// Draw the sprite
 		vita.Draw(window);
-		
+		object.Draw(window);
 		// Update the window
 		window.display();
 	}
