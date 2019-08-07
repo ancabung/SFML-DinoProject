@@ -60,6 +60,8 @@ private:
 		StandingRight,
 		SprintRight,
 		SprintLeft,
+		SprintUp,
+		SprintDown,
 		WalkingUp,
 		WalkingDown,
 		WalkingLeft,
@@ -83,7 +85,8 @@ public:
 			animation[int(AnimationIndex::WalkingRight)] = Animation(24 * 3, 0, 24, 24);
 			animation[int(AnimationIndex::SprintRight)] = Animation(24 * 18, 0, 24, 24);
 			animation[int(AnimationIndex::SprintLeft)] = Animation(24 * 22, 0, -24, 24);
-
+			animation[int(AnimationIndex::SprintUp)] = Animation(24 * 18, 0, 24, 24);
+			animation[int(AnimationIndex::SprintDown)] = Animation(24 * 22, 0, -24, 24);
 
 		//Scale sprite
 		sprite.setScale(sf::Vector2f(1.f, 1.f)); // absolute scale factor
@@ -124,6 +127,14 @@ public:
 		else if (dir.x < -3.0f)
 		{
 			curAnimation = AnimationIndex::SprintLeft;
+		}
+		else if (dir.y > 3.0f)
+		{
+			curAnimation = AnimationIndex::SprintUp;
+		}
+		else if (dir.y < -3.0f)
+		{
+			curAnimation = AnimationIndex::SprintDown;
 		}
 		else if (dir.x == 0 && dir.y == 0)
 		{
@@ -166,7 +177,7 @@ public:
 		:
 		pos(pos)
 	{
-		texture.loadFromFile("shuriken.png");
+		texture.loadFromFile("shuriken2.png");
 		shuriken.setTexture(texture);
 
 		//Scale sprite
@@ -184,7 +195,7 @@ public:
 	}
 	void Update(float dt) {
 		//pos += vel * dt;
-		shuriken.rotate(-1.f);
+		shuriken.rotate(1.5f);
 		shuriken.setPosition(pos);
 	}
 private:
