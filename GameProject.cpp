@@ -8,6 +8,7 @@
 #include "Food.h"
 #include "Status.h"
 #include <time.h>
+#include <sstream>
 using namespace std;
 
 struct GameOverMessage
@@ -47,20 +48,25 @@ int main()
 	//Coin Objects:
 	std::vector<Food*> coinVec;
 	Food coin1({ 20, 20 });
-	Food coin2({ 20, 20 });
 	coinVec.push_back(&coin1);
-	coinVec.push_back(&coin2);
 	srand(time(NULL));
-	
 	coin1.setPos({ 700, 600 });
-	//coin2.setPos({ 100, 600 });
-
-	sf::Vector2f _dir = { 1.0f, 1.0f };
-	float life = 2;
-	//Font
+	int score = 0;
 	sf::Font font;
 	if (!font.loadFromFile("Monogram.ttf"))
 		return EXIT_FAILURE;
+	std::ostringstream ssScore;
+	ssScore << "Score: " << score;
+	font.loadFromFile("Monogram.ttf");
+	sf::Text lblScore;
+	lblScore.setCharacterSize(60);
+	lblScore.setPosition({ 750, 0 });
+	lblScore.setFont(font);
+	lblScore.setString(ssScore.str());
+	sf::Vector2f _dir = { 1.0f, 1.0f };
+	float life = 2;
+	//Font
+	
 	sf::Text text("VitaTheDino", font, 50);
 
 	// timepoint for delta time calculation
@@ -69,6 +75,11 @@ int main()
 	sf::Music music;
 	if (!music.openFromFile("Ludum Dare 32 - Track 2.wav"))
 		return EXIT_FAILURE;
+	sf::SoundBuffer buffer;
+	if (!buffer.loadFromFile("coininsert.wav"))
+		return -1;
+	sf::Sound sound;
+	sound.setBuffer(buffer);
 	// Play the music
 	music.play();
 
@@ -136,15 +147,17 @@ int main()
 			
 			for (int i = 0; i < coinVec.size(); i++) {
 				if (vita.isCollidingwithFood(coinVec[i])) {
+					sound.play();
 					float x = rand() % 800 + 100;
 					float y = rand() % 600 + 100;
 					coinVec[i]->setPos({x, y});
-					//score++;
-					//ssScore.str("");
-					//ssScore << "Score " << score;
-					//lblScore.setString(ssScore.str());
+					score++;
+					ssScore.str("");
+					ssScore << "Score " << score;
+					lblScore.setString(ssScore.str());
 				}
 			}
+			
 			//Set direction
 			object.SetDirection(_dir);
 			vita.SetDirection(dir);
@@ -159,9 +172,8 @@ int main()
 
 			window.draw(sBackground);		//Draw background
 			window.draw(text);				//Draw text
-
+			window.draw(lblScore);
 			coin1.drawTo(window);
-			coin2.drawTo(window);
 			// Draw the sprite
 			vita.Draw(window);
 			object.Draw(window);
