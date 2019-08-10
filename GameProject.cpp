@@ -1,215 +1,22 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <chrono>
-
+#include <iostream>
+#include "Player.h"
+#include "Animation.h"
+#include "Obstacles.h"
 using namespace std;
 
-class Animation
+class Game //TODO: make score and reward system
 {
 public:
-	Animation() = default;
-	Animation(int x, int y, int width, int height)
-	{
-		texture.loadFromFile("DinoSprites - vita.png");
-		for (int i = 0; i < nFrames; i++)
-		{
-			frames[i] = { x + i * width,y,width,height };
-			flipFrames[i] = { x + i * width + width,y,-width,height };
-		}
-	}
-	void ApplyToSprite(sf::Sprite& s) const
-	{
-		s.setTexture(texture);
-		s.setTextureRect(frames[iFrame]);
-	}
-	void Update(float dt)
-	{
-		time += dt;
-		while (time >= holdTime)
-		{
-			time -= holdTime;
-			Advance();
-		}
-	}
 private:
-	void Advance()
-	{
-		if (++iFrame >= nFrames)
-		{
-			iFrame = 0;
-		}
-	}
-
-private:
-	static constexpr int nFrames = 4;
-	static constexpr float holdTime = 0.1f;
-	sf::Texture texture;
-	sf::IntRect frames[nFrames], flipFrames[nFrames];
-	int iFrame = 0;
-	float time = 0.0f;
-};
-
-class Dino
-{
-//public:
-	//static constexpr float gravity = 1;
-	//int groundHeight = 600.0f;
-private:
-	enum class AnimationIndex
-	{	StandingLeft,
-		StandingRight,
-		SprintRight,
-		SprintLeft,
-		SprintUp,
-		SprintDown,
-		WalkingUp,
-		WalkingDown,
-		WalkingLeft,
-		WalkingRight,
-		Count,
-		breakLeft,
-		breakRight
-	};
-public:
-	Dino(const sf::Vector2f& pos)
-		:
-		pos(pos)
-	{
-			//Set sprite at specific position
-			sprite.setTextureRect({ 0,0,24,24 });
-			animation[int(AnimationIndex::StandingLeft)] = Animation(24*4, 0, -24, 24);
-			animation[int(AnimationIndex::StandingRight)] = Animation(0, 0, 24, 24);
-			animation[int(AnimationIndex::WalkingUp)] = Animation(24 * 3, 0, 24, 24);
-			animation[int(AnimationIndex::WalkingDown)] = Animation(24 * 3, 0, 24, 24);
-			animation[int(AnimationIndex::WalkingLeft)] = Animation(24 * 7, 0, -24, 24);
-			animation[int(AnimationIndex::WalkingRight)] = Animation(24 * 3, 0, 24, 24);
-			animation[int(AnimationIndex::SprintRight)] = Animation(24 * 18, 0, 24, 24);
-			animation[int(AnimationIndex::SprintLeft)] = Animation(24 * 22, 0, -24, 24);
-			animation[int(AnimationIndex::SprintUp)] = Animation(24 * 18, 0, 24, 24);
-			animation[int(AnimationIndex::SprintDown)] = Animation(24 * 22, 0, -24, 24);
-
-		//Scale sprite
-		sprite.setScale(sf::Vector2f(1.f, 1.f)); // absolute scale factor
-		sprite.scale(sf::Vector2f(4.f, 4.f)); // factor relative to the current scale
-	}
-	void Draw(sf::RenderTarget& rt) const 
-	{	
-		rt.draw(sprite);
-	}
-	void SetDirection(const sf::Vector2f& dir)
-	{
-		vel = dir * speed;
-		//Swiching between animations
-		if (dir.x > 0.0f && dir.x < 3.0f)
-		{
-			state = AnimationIndex::breakRight;
-			curAnimation = AnimationIndex::WalkingRight;
-		}
-		else if (dir.x < 0.0f && dir.x > -3.0f)
-		{
-			state = AnimationIndex::breakLeft;
-			curAnimation = AnimationIndex::WalkingLeft;
-
-		}
-		else if (dir.y < 0.0f)
-		{
-			curAnimation = AnimationIndex::WalkingUp;
-
-		}
-		else if (dir.y > 0.0f)
-		{
-			curAnimation = AnimationIndex::WalkingDown;
-		}
-		else if (dir.x > 3.0f)
-		{
-			curAnimation = AnimationIndex::SprintRight;
-		}
-		else if (dir.x < -3.0f)
-		{
-			curAnimation = AnimationIndex::SprintLeft;
-		}
-		else if (dir.y > 3.0f)
-		{
-			curAnimation = AnimationIndex::SprintUp;
-		}
-		else if (dir.y < -3.0f)
-		{
-			curAnimation = AnimationIndex::SprintDown;
-		}
-		else if (dir.x == 0 && dir.y == 0)
-		{
-			if (state == AnimationIndex::breakRight)
-				curAnimation = AnimationIndex::StandingRight;
-			else curAnimation = AnimationIndex::StandingLeft;
-		}
-
-	}
-
-	void SetPosition(sf::Vector2f newPos) {
-		sprite.setPosition(newPos);
-	}
-	void Update(float dt) {
-		pos += vel * dt;	
-		animation[int (curAnimation)].Update(dt);
-		animation[int(curAnimation)].ApplyToSprite(sprite);
-		sprite.setPosition(pos);
-	}
-	float getY() {
-		return sprite.getPosition().y;
-	}
-	float getX() {
-		return sprite.getPosition().x;
-	}
-private:
-	static constexpr float speed = 125.0f;
-	sf::Vector2f pos;
-	sf::Vector2f vel = {0.0f,0.0f};
-	sf::Sprite sprite;
-	Animation animation[int(AnimationIndex::Count)] ;
-	AnimationIndex curAnimation = AnimationIndex::StandingRight;
-	AnimationIndex state = AnimationIndex::breakRight;
-};
-
-class Obstacles
-{
-public:
-	Obstacles(const sf::Vector2f& pos)
-		:
-		pos(pos)
-	{
-		texture.loadFromFile("shuriken2.png");
-		shuriken.setTexture(texture);
-
-		//Scale sprite
-		shuriken.setOrigin(sf::Vector2f(12, 12));
-		shuriken.setScale(sf::Vector2f(1.f, 1.f)); // absolute scale factor
-		shuriken.scale(sf::Vector2f(2.f, 2.f)); // factor relative to the current scale
-		//shuriken.rotate(10.f);
-	}
-	void Draw(sf::RenderTarget& rt) const
-	{
-		rt.draw(shuriken);
-	}
-	void SetPosition(sf::Vector2f newPos) {
-		shuriken.setPosition(newPos);
-	}
-	void Update(float dt) {
-		//pos += vel * dt;
-		shuriken.rotate(1.5f);
-		shuriken.setPosition(pos);
-	}
-private:
-	//sf::Vector2f vel = { 40.0f,40.0f };
-	sf::Vector2f pos;
-	sf::Texture texture;
-	sf::Sprite shuriken;
-};
-
-class Status		//TO DO: move function from main to this class
+}; 
+class Status		//TODO: move function from main to this class
 {
 public:
 	float window_width = 1024, window_height = 768;
-
+	bool gameOver = false;
 };
 
 int main()
@@ -220,20 +27,16 @@ int main()
 	sf::Texture bg;
 	bg.loadFromFile("background.png");
 	sf::Sprite sBackground(bg);
-	Dino vita({ 100.0f, 100.0f });
-	Obstacles object({ 400.0f ,400.0f });
-	//Gravity Variables
-	//const int groundHeight = 600.0f;
-	//const float gravity = 30.0f;
-	//bool isJumping = false;
-	
+	Player vita({ status.window_width / 2 - 55, status.window_height / 2 - 30});
+	Obstacles object({ 1000.0f ,400.0f });
+	sf::Vector2f _dir = { 1.0f, 1.0f };
 	//Font
 	sf::Font font;
 	if (!font.loadFromFile("Monogram.ttf"))
 		return EXIT_FAILURE;
 	sf::Text text("VitaTheDino", font, 50);
 
-	// timepoint for delta time measurement
+	// timepoint for delta time calculation
 	auto tp = chrono::steady_clock::now();
 	// Load a music to play
 	sf::Music music;
@@ -263,17 +66,12 @@ int main()
 			tp = new_tp;
 		}
 
-		//Handle input
+		//Handle input //TODO: move to status class
 		sf::Vector2f dir = { 0.0f,0.0f };
-		
-		//if (sf::Event::KeyReleased) isJumping = false;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 		{
 			if (vita.getY() + 16 <= 0) dir.y = 0.0f;
 			else dir.y -= 2.0f;
-			//isJumping = true;
-		//} else if (vita.getY() < groundHeight && isJumping == false) {
-		//	dir.y += 5.0f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 		{
@@ -300,17 +98,25 @@ int main()
 			if (vita.getX() + 20 <= 0) dir.x = 0.0f;
 			else dir.x -= 5.0f;
 		}
-
+		if (object.getX() - 250 >= status.window_width) _dir.x = -1.0f;
+		if (object.getX() + 250 <= 0) _dir.x = 1.0f;
+		if (object.getY() - 250 >= status.window_height) _dir.y = -1.0f;
+		if (object.getY() + 250 <= 0) _dir.y = 1.0f;
+		//Set direction
+		object.SetDirection(_dir);
 		vita.SetDirection(dir);
 		
 		//update
 		object.Update(dt);
 		vita.Update(dt);
+		
 		// Clear screen
 		window.clear();
+		
 		window.draw(sBackground);		//Draw background
 		window.draw(text);				//Draw text
-		// Draw the sprite
+		
+										// Draw the sprite
 		vita.Draw(window);
 		object.Draw(window);
 		// Update the window
