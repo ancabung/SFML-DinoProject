@@ -6,11 +6,10 @@ Obstacles::Obstacles(const sf::Vector2f& pos)
 {
 	texture.loadFromFile("shuriken2.png");
 	shuriken.setTexture(texture);
-
 	//Scale sprite
 	shuriken.setOrigin(sf::Vector2f(12, 12));
 	shuriken.setScale(sf::Vector2f(1.f, 1.f)); // absolute scale factor
-	shuriken.scale(sf::Vector2f(2.f, 2.f)); // factor relative to the current scale
+	shuriken.scale(sf::Vector2f(3.f, 3.f)); // factor relative to the current scale
 }
 void Obstacles::Draw(sf::RenderTarget& rt) const
 {
@@ -32,4 +31,8 @@ float Obstacles::getY() {
 }
 float Obstacles::getX() {
 	return shuriken.getPosition().x;
+}
+
+sf::FloatRect Obstacles::getGlobalBounds() {
+	return shuriken.getGlobalBounds();
 }

@@ -3,7 +3,7 @@
 
 Animation::Animation(int x, int y, int width, int height)
 {
-	texture.loadFromFile("DinoSprites - vita.png");
+	texture.loadFromFile("vita5.png");
 	for (int i = 0; i < nFrames; i++)
 	{
 		frames[i] = { x + i * width,y,width,height };

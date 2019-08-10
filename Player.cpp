@@ -5,17 +5,16 @@ Player::Player(const sf::Vector2f& pos)
 	pos(pos)
 {
 	//Set sprite at specific position
-	sprite.setTextureRect({ 0,0,24,24 });
-	animation[int(AnimationIndex::StandingLeft)] = Animation(24 * 4, 0, -24, 24);
-	animation[int(AnimationIndex::StandingRight)] = Animation(0, 0, 24, 24);
-	animation[int(AnimationIndex::WalkingUp)] = Animation(24 * 3, 0, 24, 24);
-	animation[int(AnimationIndex::WalkingDown)] = Animation(24 * 3, 0, 24, 24);
-	animation[int(AnimationIndex::WalkingLeft)] = Animation(24 * 7, 0, -24, 24);
-	animation[int(AnimationIndex::WalkingRight)] = Animation(24 * 3, 0, 24, 24);
-	animation[int(AnimationIndex::SprintRight)] = Animation(24 * 18, 0, 24, 24);
-	animation[int(AnimationIndex::SprintLeft)] = Animation(24 * 22, 0, -24, 24);
-	animation[int(AnimationIndex::SprintUp)] = Animation(24 * 18, 0, 24, 24);
-	animation[int(AnimationIndex::SprintDown)] = Animation(24 * 22, 0, -24, 24);
+	animation[int(AnimationIndex::StandingLeft)] = Animation(18 * 4, 0, -18, 18);
+	animation[int(AnimationIndex::StandingRight)] = Animation(0, 0, 18, 18);
+	animation[int(AnimationIndex::WalkingUp)] = Animation(18 * 3, 0, 18, 18);
+	animation[int(AnimationIndex::WalkingDown)] = Animation(18 * 3, 0, 18, 18);
+	animation[int(AnimationIndex::WalkingLeft)] = Animation(18 * 7, 0, -18, 18);
+	animation[int(AnimationIndex::WalkingRight)] = Animation(18 * 3, 0, 18, 18);
+	animation[int(AnimationIndex::SprintRight)] = Animation(18 * 18, 0, 18, 18);
+	animation[int(AnimationIndex::SprintLeft)] = Animation(18 * 22, 0, -18, 18);
+	animation[int(AnimationIndex::SprintUp)] = Animation(18 * 18, 0, 18, 18);
+	animation[int(AnimationIndex::SprintDown)] = Animation(18 * 22, 0, -18, 18);
 	//Scale sprite
 	sprite.setScale(sf::Vector2f(1.f, 1.f)); // absolute scale factor
 	sprite.scale(sf::Vector2f(4.f, 4.f)); // factor relative to the current scale
@@ -85,4 +84,11 @@ float Player::getY() {
 }
 float Player::getX() {
 	return sprite.getPosition().x;
+}
+
+bool Player::isCollidingwithObject(Obstacles object) {
+	if (sprite.getGlobalBounds().intersects(object.getGlobalBounds())){
+		return true;
+	}
+	return false;
 }

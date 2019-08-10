@@ -10,11 +10,13 @@ public:
 	void Update(float dt);
 	float getY();
 	float getX();
+	sf::FloatRect getGlobalBounds();
 private:
-	static constexpr float speed = 405.0f;
+	static constexpr float speed = 605.0f;
 	sf::Vector2f pos;
 	sf::Vector2f vel = { 0.0f,0.0f };
 	sf::Texture texture;
 	sf::Sprite shuriken;
+	
 };
 

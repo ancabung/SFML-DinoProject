@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "animation.h"
+#include "Obstacles.h"
 class Player
 {
 private:
@@ -28,6 +29,7 @@ public:
 	void Update(float dt);
 	float getY();
 	float getX();
+	bool isCollidingwithObject(Obstacles object);
 private:
 	static constexpr float speed = 150.0f;
 	sf::Vector2f pos;
