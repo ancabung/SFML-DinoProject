@@ -92,3 +92,10 @@ bool Player::isCollidingwithObject(Obstacles object) {
 	}
 	return false;
 }
+
+bool Player::isCollidingwithFood(Food *food) {
+	if (sprite.getGlobalBounds().intersects(food->getGlobalBounds())) {
+		return true;
+	}
+	return false;
+}

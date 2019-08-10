@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "animation.h"
 #include "Obstacles.h"
+#include "Food.h"
 class Player
 {
 private:
@@ -30,6 +31,7 @@ public:
 	float getY();
 	float getX();
 	bool isCollidingwithObject(Obstacles object);
+	bool isCollidingwithFood(Food *food);
 private:
 	static constexpr float speed = 150.0f;
 	sf::Vector2f pos;

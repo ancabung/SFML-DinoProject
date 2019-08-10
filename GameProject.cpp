@@ -5,7 +5,9 @@
 #include "Player.h"
 #include "Animation.h"
 #include "Obstacles.h"
+#include "Food.h"
 #include "Status.h"
+#include <time.h>
 using namespace std;
 
 struct GameOverMessage
@@ -23,7 +25,7 @@ struct GameOverMessage
 		// set the color
 		// set the text style
 		text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-		text.setPosition(sf::Vector2f(1024 / 2, 768 / 2 ));
+		text.setPosition(sf::Vector2f(800 / 2, 600 / 2 ));
 	}
 
 	void draw(sf::RenderWindow& window) {
@@ -42,6 +44,17 @@ int main()
 	sf::Sprite sBackground(bg);
 	Player vita({ status.window_width / 2 - 55, status.window_height / 2 - 30});
 	Obstacles object({ 1000.0f ,400.0f });
+	//Coin Objects:
+	std::vector<Food*> coinVec;
+	Food coin1({ 20, 20 });
+	Food coin2({ 20, 20 });
+	coinVec.push_back(&coin1);
+	coinVec.push_back(&coin2);
+	srand(time(NULL));
+	
+	coin1.setPos({ 700, 600 });
+	//coin2.setPos({ 100, 600 });
+
 	sf::Vector2f _dir = { 1.0f, 1.0f };
 	float life = 2;
 	//Font
@@ -118,7 +131,20 @@ int main()
 			if (object.getY() + 250 <= 0) _dir.y = 1.0f;
 
 			if (vita.isCollidingwithObject(object)) life -= 1;
-
+			//if (vita.isCollidingwithFood(food)) food.SetPosition({800,600 });
+			//Coin Logic:
+			
+			for (int i = 0; i < coinVec.size(); i++) {
+				if (vita.isCollidingwithFood(coinVec[i])) {
+					float x = rand() % 800 + 100;
+					float y = rand() % 600 + 100;
+					coinVec[i]->setPos({x, y});
+					//score++;
+					//ssScore.str("");
+					//ssScore << "Score " << score;
+					//lblScore.setString(ssScore.str());
+				}
+			}
 			//Set direction
 			object.SetDirection(_dir);
 			vita.SetDirection(dir);
@@ -134,7 +160,9 @@ int main()
 			window.draw(sBackground);		//Draw background
 			window.draw(text);				//Draw text
 
-											// Draw the sprite
+			coin1.drawTo(window);
+			coin2.drawTo(window);
+			// Draw the sprite
 			vita.Draw(window);
 			object.Draw(window);
 		}
