@@ -44,7 +44,9 @@ int main()
 	bg.loadFromFile("background.png");
 	sf::Sprite sBackground(bg);
 	Player vita({ status.window_width / 2 - 55, status.window_height / 2 - 30});
-	Obstacles object({ 1000.0f ,400.0f });
+	int o1 = 1,o2 = 2;
+	Obstacles object({ 1000.0f ,400.0f }, o1);
+	Obstacles object2({ 800.0f ,1000.0f }, o2);
 	//Coin Objects:
 	std::vector<Food*> coinVec;
 	Food coin1({ 20, 20 });
@@ -64,6 +66,7 @@ int main()
 	lblScore.setFont(font);
 	lblScore.setString(ssScore.str());
 	sf::Vector2f _dir = { 1.0f, 1.0f };
+	sf::Vector2f _dir2 = { -1.0f, 1.0f };
 	float life = 2;
 	//Font
 	
@@ -141,31 +144,39 @@ int main()
 			if (object.getY() - 250 >= status.window_height) _dir.y = -1.0f;
 			if (object.getY() + 250 <= 0) _dir.y = 1.0f;
 
-			if (vita.isCollidingwithObject(object)) life -= 1;
-			//if (vita.isCollidingwithFood(food)) food.SetPosition({800,600 });
+			if (object2.getX() - 350 >= status.window_width) _dir2.x = -1.0f;
+			if (object2.getX() + 350 <= 0) _dir2.x = 1.0f;
+			if (object2.getY() - 350 >= status.window_height) _dir2.y = -1.0f;
+			if (object2.getY() + 350 <= 0) _dir2.y = 1.0f;
+
+			if (vita.isCollidingwithObject(object) || vita.isCollidingwithObject(object2)) life -= 1;
 			//Coin Logic:
-			
+
 			for (int i = 0; i < coinVec.size(); i++) {
 				if (vita.isCollidingwithFood(coinVec[i])) {
 					sound.play();
 					float x = rand() % 800 + 100;
 					float y = rand() % 600 + 100;
-					coinVec[i]->setPos({x, y});
+					coinVec[i]->setPos({ x, y });
 					score++;
 					ssScore.str("");
 					ssScore << "Score " << score;
 					lblScore.setString(ssScore.str());
 				}
 			}
-			
+			//if (score == 1) {
+
+
+			//}
 			//Set direction
-			object.SetDirection(_dir);
+			
 			vita.SetDirection(dir);
 
 			//update
 
-			object.Update(dt);
+			
 			vita.Update(dt);
+
 
 			// Clear screen
 			window.clear();
@@ -176,7 +187,17 @@ int main()
 			coin1.drawTo(window);
 			// Draw the sprite
 			vita.Draw(window);
-			object.Draw(window);
+			
+			if (score >= 3) {
+				object.SetDirection(_dir);
+				object.Update(dt, o1);
+				object.Draw(window);
+			}
+			if (score >= 10) {
+				object2.SetDirection(_dir2);
+				object2.Update(dt, o2);
+				object2.Draw(window);
+			}
 		}
 		// Update the window
 		else gameovermsg.draw(window);
