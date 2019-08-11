@@ -76,7 +76,7 @@ int main()
 	auto tp = chrono::steady_clock::now();
 	// Load a music to play
 	sf::Music music;
-	if (!music.openFromFile("Ludum Dare 32 - Track 2.wav"))
+	if (!music.openFromFile("13.ogg"))
 		return EXIT_FAILURE;
 	sf::SoundBuffer buffer;
 	if (!buffer.loadFromFile("coininsert.wav"))
@@ -84,6 +84,8 @@ int main()
 	sf::Sound sound;
 	sound.setBuffer(buffer);
 	// Play the music
+	music.setVolume(2.f);
+	music.setLoop(true);
 	music.play();
 
 	// Start the game loop
