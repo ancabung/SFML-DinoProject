@@ -41,11 +41,11 @@ int main()
 	Status status;
 	sf::RenderWindow window(sf::VideoMode(status.window_width, status.window_height), "VitaTheDino");
 	sf::Texture bg;
-	bg.loadFromFile("background.png");
+	bg.loadFromFile("background2.png");
 	sf::Sprite sBackground(bg);
 	Player vita({ status.window_width / 2 - 55, status.window_height / 2 - 30});
 	int o1 = 1,o2 = 2;
-	Obstacles object({ 1000.0f ,400.0f }, o1);
+	Obstacles object({ 1200.0f ,600.0f }, o1);
 	Obstacles object2({ 800.0f ,1000.0f }, o2);
 	//Coin Objects:
 	std::vector<Food*> coinVec;
@@ -126,12 +126,12 @@ int main()
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 			{
-				if (vita.getX() + 80 >= status.window_width) dir.x = 0.0f;
+				if (vita.getX() + 50 >= status.window_width) dir.x = 0.0f;
 				else dir.x += 2.0f;
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 			{
-				if (vita.getX() + 80 >= status.window_width) dir.x = 0.0f;
+				if (vita.getX() + 50 >= status.window_width) dir.x = 0.0f;
 				else dir.x += 5.0f;
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
